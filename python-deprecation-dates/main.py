@@ -2,6 +2,7 @@ import requests
 
 ENDOFLIFE_URL = "https://endoflife.date/api/python.json"
 
+
 def get_deprecation_dates():
     """
     Fetches Python version deprecation dates from endoflife.date and returns
