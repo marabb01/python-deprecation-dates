@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="python-deprecation-dates",
-    version="0.0.2",
+    version="0.0.3",
     description="A library to fetch Python version deprecation dates from endoflife.date.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
