@@ -15,5 +15,6 @@ def get_deprecation_dates():
     deprecation_dates = {item['cycle']: item['eol'] for item in data if item['eol']}
     return deprecation_dates
 
+
 def get_latest_version():
     return max(get_deprecation_dates().keys(), key=lambda v: list(map(int, v.split('.'))))

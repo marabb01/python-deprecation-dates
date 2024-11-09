@@ -1,8 +1,10 @@
 import pytest
 
+
 # The function to be tested
 def get_highest_version(version_dict):
     return max(version_dict.keys(), key=lambda v: list(map(int, v.split('.'))))
+
 
 # Test cases
 def test_get_highest_version():
@@ -15,14 +17,17 @@ def test_get_highest_version():
     }
     assert get_highest_version(version_dict) == '3.13'
 
+
 def test_empty_dict():
     # Testing if an empty dictionary raises a ValueError
     with pytest.raises(ValueError):
         get_highest_version({})
 
+
 def test_single_version():
     # Testing a dictionary with a single version
     assert get_highest_version({'3.8': '2024-10-07'}) == '3.8'
+
 
 def test_multiple_versions():
     version_dict = {'3.8': '2024-10-07', '3.9': '2025-10-31'}
