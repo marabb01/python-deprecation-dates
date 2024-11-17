@@ -5,16 +5,21 @@ ENDOFLIFE_URL = "https://endoflife.date/api/python.json"
 
 
 class PythonEOLAPI:
-    def __init__(self, url: str = ENDOFLIFE_URL):
+    def __init__(self, url: str = ENDOFLIFE_URL, request_settings: Optional[Dict] = None):
+        """
+        Initialize the API client.
+
+        :param url: The API endpoint URL.
+        :param request_settings: Optional dictionary for request settings (e.g., proxies, headers).
+        """
         self.url = url
+        self.request_settings = request_settings or {}
         self.data = self._fetch_data()
 
     def _fetch_data(self) -> List[Dict]:
-        """
-        Fetch the data from the endoflife.date API and return it as a list of dictionaries.
-        """
+        """Fetch the data from the endoflife.date API and return it as a list of dictionaries."""
         try:
-            response = requests.get(self.url)
+            response = requests.get(self.url, **self.request_settings)
             response.raise_for_status()
             return response.json()
         except requests.RequestException as e:
@@ -22,19 +27,14 @@ class PythonEOLAPI:
             return []
 
     def get_deprecation_dates(self) -> Dict[str, str]:
-        """
-        Return a dictionary with Python versions as keys and their end-of-life dates as values.
-        """
+        """Return a dictionary with Python versions as keys and their end-of-life dates as values."""
         return {item['cycle']: item['eol'] for item in self.data if item['eol']}
 
     def get_latest_version(self) -> str:
-        """
-        Return the latest Python version based on the highest version number.
-        """
-        return max(
-            (item['cycle'] for item in self.data),
-            key=lambda v: list(map(int, v.split('.')))
-        )
+        """Return the latest Python version."""
+        if not self.data:
+            return "Unknown"
+        return max(self.data, key=lambda x: x['cycle'])['cycle']
 
     def get_supported_versions(self) -> List[str]:
         """
