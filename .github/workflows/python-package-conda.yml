@@ -36,11 +36,22 @@ jobs:
 
   check-version:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2  # Fetch at least the last two commits
+
       - name: Check version bump
         run: |
-          if git show HEAD:setup.py | grep "version=" | grep -q $(git show HEAD~1:setup.py | grep "version="); then
-            echo "Version not bumped in setup.py"
-            exit 1
+          if git rev-parse HEAD~1 >/dev/null 2>&1; then
+            if git show HEAD:setup.py | grep "version=" | grep -q "$(git show HEAD~1:setup.py | grep "version=")"; then
+              echo "Error: Version in setup.py has not been bumped!"
+              exit 1
+            else
+              echo "Version bump detected in setup.py."
+            fi
+          else
+            echo "No previous commit detected; skipping version bump check."
           fi
