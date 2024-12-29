@@ -32,3 +32,15 @@ jobs:
           key: python
           coverage-file: pytest-results.xml
           dsn: ${{ secrets.DEEPSOURCE_DSN }}
+
+
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check version bump
+        run: |
+          if git show HEAD:setup.py | grep "version=" | grep -q $(git show HEAD~1:setup.py | grep "version="); then
+            echo "Version not bumped in setup.py"
+            exit 1
+          fi
