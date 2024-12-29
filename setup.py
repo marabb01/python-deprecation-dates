@@ -1,6 +1,5 @@
 from setuptools import setup, find_packages
 
-
 def load_requirements(filename="requirements.txt"):
     with open(filename, "r") as f:
         return [line.strip() for line in f if line.strip() and not line.startswith("#")]
