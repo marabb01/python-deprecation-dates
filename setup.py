@@ -7,7 +7,7 @@ def load_requirements(filename="requirements.txt"):
 
 setup(
     name="python-deprecation-dates",
-    version="0.2.3",
+    version="0.2.4",
     description="A library to fetch Python version deprecation dates from endoflife.date.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
