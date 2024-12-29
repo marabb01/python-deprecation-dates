@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
           pip install pytest
           pip install deepsource  # Install DeepSource CLI
 
@@ -32,3 +32,26 @@ jobs:
           key: python
           coverage-file: pytest-results.xml
           dsn: ${{ secrets.DEEPSOURCE_DSN }}
+
+
+  check-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2  # Fetch at least the last two commits
+
+      - name: Check version bump
+        run: |
+          if git rev-parse HEAD~1 >/dev/null 2>&1; then
+            if git show HEAD:setup.py | grep "version=" | grep -q "$(git show HEAD~1:setup.py | grep "version=")"; then
+              echo "Error: Version in setup.py has not been bumped!"
+              exit 1
+            else
+              echo "Version bump detected in setup.py."
+            fi
+          else
+            echo "No previous commit detected; skipping version bump check."
+          fi
