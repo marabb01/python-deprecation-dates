@@ -49,7 +49,7 @@ jobs:
         id: get_version
         run: |
           # Extract version from setup.py by reading the file
-          version=$(python -c "from setuptools import setup; exec(open('setup.py').read()); print(setup().get('version'))")
+          version=$(python -c "import re; with open('setup.py', 'r') as f: content = f.read(); match = re.search(r\"version=['\"]([^'\"]+)['\"]\", content); print(match.group(1))")
           echo "Current version: $version"
           echo "version=$version" >> $GITHUB_ENV
 
