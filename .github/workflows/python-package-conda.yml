@@ -48,8 +48,8 @@ jobs:
       - name: Get current version from setup.py
         id: get_version
         run: |
-          # Extract version from setup.py using Python
-          version=$(python -c "from setuptools import setup; print(setup().get('version'))")
+          # Extract version from setup.py by reading the file
+          version=$(python -c "from setuptools import setup; exec(open('setup.py').read()); print(setup().get('version'))")
           echo "Current version: $version"
           echo "version=$version" >> $GITHUB_ENV
 
