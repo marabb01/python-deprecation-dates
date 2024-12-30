@@ -41,6 +41,10 @@ jobs:
           git config --global user.email "actions@github.com"
           git config --list  # Log the configuration to confirm it's set correctly
 
+      - name: Checkout master branch
+        run: |
+          git checkout master  # Ensure we're on the 'master' branch
+
       - name: Bump Version
         run: |
           pip install bump2version
