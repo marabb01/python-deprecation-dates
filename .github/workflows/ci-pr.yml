@@ -29,12 +29,13 @@ jobs:
 
   bump-version:
     runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'Bump version')"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
@@ -43,15 +44,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
-      - name: Bump version in setup.py
+      - name: Get current version
+        run: echo "current_version=$(python -c 'import setuptools; exec(open(\"setup.py\").read()); print(setup(name, version))')" >> $GITHUB_ENV
+
+      - name: Bump version
         run: |
-          # Fetch the current version from setup.py
-          current_version=$(python -c "import setuptools; exec(open('setup.py').read()); print(setup(name, version))")
-          
-          # Bump the version (this is an example of a minor bump)
           new_version=$(echo $current_version | awk -F. -v OFS=. '{$NF+=1; print}')
-          
-          # Replace the version in setup.py
+          echo "new_version=$new_version" >> $GITHUB_ENV
+
+      - name: Update version in setup.py
+        run: |
           sed -i "s/version='$current_version'/version='$new_version'/" setup.py
 
       - name: Commit version bump
