@@ -56,8 +56,8 @@ jobs:
         run: |
           sed -i "s/version='$current_version'/version='$new_version'/" setup.py
 
-      - name: Checkout the target branch (e.g., master)
-        run: git checkout master
+      - name: Checkout the PR source branch
+        run: git checkout ${{ github.head_ref }}
 
       - name: Commit version bump
         run: |
@@ -65,4 +65,4 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add setup.py
           git commit -m "Bump version to $new_version"
-          git push origin master
+          git push origin ${{ github.head_ref }}
