@@ -38,9 +38,7 @@ jobs:
       - name: Bump Version
         run: |
           pip install bump2version
-          bump2version patch  # Use patch, minor, or major as needed
+          bump2version patch
           git config --local user.name "GitHub Actions"
           git config --local user.email "actions@github.com"
-          git commit -am "Bump version [skip ci]"
-          git tag $(python setup.py --version)
           git push --follow-tags
