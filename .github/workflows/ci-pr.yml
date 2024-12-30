@@ -1,32 +1,11 @@
-name: CI for Pull Requests
+name: Bump Version on PR
 
 on:
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt
-          pip install pytest
-
-      - name: Run tests
-        run: pytest
-
   bump-version:
     runs-on: ubuntu-latest
     steps:
@@ -38,19 +17,16 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt
-
       - name: Bump version in setup.py
         run: |
-          # Fetch the current version from setup.py
-          current_version=$(python -c "import setuptools; exec(open('setup.py').read()); print(setup(name, version))")
+          # Get the current version from setup.py
+          current_version=$(grep -oP "version='\K[0-9]+\.[0-9]+\.[0-9]+" setup.py)
           
-          # Bump the version (this is an example of a minor bump)
-          new_version=$(echo $current_version | awk -F. -v OFS=. '{$NF+=1; print}')
-          
+          # Bump the version (e.g., patch version)
+          IFS='.' read -r -a version_parts <<< "$current_version"
+          ((version_parts[2]++))
+          new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
+
           # Replace the version in setup.py
           sed -i "s/version='$current_version'/version='$new_version'/" setup.py
 
@@ -60,4 +36,4 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add setup.py
           git commit -m "Bump version to $new_version"
-          git push origin
+          git push
