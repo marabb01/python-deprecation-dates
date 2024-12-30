@@ -33,8 +33,7 @@ jobs:
           coverage-file: pytest-results.xml
           dsn: ${{ secrets.DEEPSOURCE_DSN }}
 
-
-  check-version:
+  bump-version:
     runs-on: ubuntu-latest
 
     steps:
@@ -43,15 +42,25 @@ jobs:
         with:
           fetch-depth: 2  # Fetch at least the last two commits
 
-      - name: Check version bump
+      - name: Get current version
+        id: get_version
         run: |
-          if git rev-parse HEAD~1 >/dev/null 2>&1; then
-            if git show HEAD:setup.py | grep "version=" | grep -q "$(git show HEAD~1:setup.py | grep "version=")"; then
-              echo "Error: Version in setup.py has not been bumped!"
-              exit 1
-            else
-              echo "Version bump detected in setup.py."
-            fi
-          else
-            echo "No previous commit detected; skipping version bump check."
-          fi
+          version=$(python -c "import setuptools_scm; print(setuptools_scm.get_version())")
+          echo "Current version: $version"
+          echo "version=$version" >> $GITHUB_ENV
+
+      - name: Bump version
+        run: |
+          new_version=$(python -c "import semver; import os; version = os.getenv('version'); new_version = semver.VersionInfo.parse(version).bump_patch(); print(new_version)")
+          echo "New version: $new_version"
+
+          # Update version in setup.py or another versioning file
+          sed -i "s/version='$version'/version='$new_version'/g" setup.py
+
+          # Commit the version bump
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add setup.py
+          git commit -m "Bump version to $new_version"
+          git push
+
