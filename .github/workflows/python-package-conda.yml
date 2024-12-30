@@ -43,10 +43,6 @@ jobs:
         with:
           fetch-depth: 2  # Fetch at least the last two commits
 
-      - name: Install setuptools_scm
-        run: |
-          pip install setuptools_scm  # Ensure setuptools_scm is installed
-
       - name: Get current version
         id: get_version
         run: |
