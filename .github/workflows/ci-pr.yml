@@ -32,13 +32,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Set Git Identity
+      run: |
+        git config --local user.name "GitHub Actions"
+        git config --local user.email "actions@github.com"
+        git config --list  # Log the configuration to confirm it's set correctly
 
-      - name: Bump Version
-        run: |
-          pip install bump2version
-          bump2version patch
-          git config --local user.name "GitHub Actions"
-          git config --local user.email "actions@github.com"
-          git push --follow-tags
+    - name: Bump Version
+      run: |
+        pip install bump2version
+        bump2version patch  # Change to 'minor' or 'major' if needed
+        git config --list  # Log again to ensure Git configuration persists
+        git push --follow-tags
