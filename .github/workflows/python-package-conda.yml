@@ -45,19 +45,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
-      - name: Get current version
+      - name: Get current version from setup.py
         id: get_version
         run: |
-          version=$(python -c "import setuptools_scm; print(setuptools_scm.get_version())")
+          # Extract version from setup.py using Python
+          version=$(python -c "from setuptools import setup; print(setup().get('version'))")
           echo "Current version: $version"
           echo "version=$version" >> $GITHUB_ENV
 
       - name: Bump version
         run: |
+          # Use semver to bump the version (e.g., bump patch version)
           new_version=$(python -c "import semver; import os; version = os.getenv('version'); new_version = semver.VersionInfo.parse(version).bump_patch(); print(new_version)")
           echo "New version: $new_version"
 
-          # Update version in setup.py or another versioning file
+          # Update version in setup.py
           sed -i "s/version='$version'/version='$new_version'/g" setup.py
 
           # Commit the version bump
